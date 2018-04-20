@@ -5,33 +5,51 @@ const LaundryPickup = require("../models/laundry-pickup");
 const ensureLoggedIn = require("../middlewares/ensureLoggedIn");
 
 router.get("/dashboard", ensureLoggedIn("/login"), (req, res, next) => {
-  res.render("laundry/dashboard", {user: req.user});
+  let query;
+
+  if( req.user.isLaunderer ) {
+    query = { launderer: req.user.id };
+  } else {
+    query = { user: req.user.id };
+  }
+
+  LaundryPickup.find(query)
+    .populate("user", "name")
+    .populate("launderer", "name")
+    .sort("pickupDate")
+    .then( pickups => res.render("laundry/dashboard") )
+    .catch( err => next(err) );
 })
 
 router.post("/launderers", ensureLoggedIn("/login"), (req, res, next) => {
-  const id = req.user.id;
+  req.user.isLaunderer = true;
+  req.user.fee = req.body.fee;
+  req.user.save()
+  .then(() => res.redirect("/dashboard"))
+  .catch(e => next(e))
+});
 
-  const laundererInfo = {
-    fee: req.body.fee,
-    isLaunderer: true
-  };
+//   const laundererInfo = {
+//     fee: req.body.fee,
+//     isLaunderer: true
+//   };
 
-  User.findByIdAndUpdate( id, laundererInfo)
-  .then( () => res.redirect("/dashboard") )
-  .catch( err => {
-    console.log(err);
-    next(err); 
-  } );
-})
+//   User.findByIdAndUpdate( id, laundererInfo)
+//   .then( () => res.redirect("/dashboard") )
+//   .catch( err => {
+//     console.log(err);
+//     next(err); 
+//   } );
+// })
 
-router.get("/launderers", (req, res, next) => {
-  User.find( {isLaunderer: true})
-  .then( launderers => res.render("laundry/launderers", {launderers}))
-  .catch( err => {
-    console.log(err);
-    next(err);
-  })
-})
+// router.get("/launderers", (req, res, next) => {
+//   User.find( {isLaunderer: true})
+//   .then( launderers => res.render("laundry/launderers", {launderers}))
+//   .catch( err => {
+//     console.log(err);
+//     next(err);
+//   })
+// })
 
 router.get("/launderers/:id", (req, res, next) => {
   const id = req.params.id;

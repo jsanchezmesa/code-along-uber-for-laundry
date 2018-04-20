@@ -23,4 +23,13 @@ router.post("/launderers", ensureLoggedIn("/login"), (req, res, next) => {
   } );
 })
 
+router.get("/launderers", (req, res, next) => {
+  User.find( {isLaunderer: true})
+  .then( launderers => res.render("laundry/launderers", {launderers}))
+  .catch( err => {
+    console.log(err);
+    next(err);
+  })
+})
+
 module.exports = router;

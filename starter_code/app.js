@@ -43,8 +43,10 @@ app.use(session({
     ttl: 24 * 60 * 60 // 1 day
   })
 }));
+require("./passport")(app);
 
-app.use( (req, res, next) => {
+
+/* app.use( (req, res, next) => {
   if( req.session.currentUser ) {
     res.locals.currentUserInfo = req.session.currentUser;
     res.locals.isUserLoggedIn = true;
@@ -53,7 +55,7 @@ app.use( (req, res, next) => {
   }
 
   next();
-})
+}) */
 
 // Express View engine setup
 
@@ -75,7 +77,9 @@ app.locals.title = "Express - Generated with IronGenerator";
 
 const index = require("./routes/index");
 const auth = require("./routes/auth");
+const laundry = require("./routes/laundry");
 app.use("/", index);
 app.use("/", auth);
+app.use("/", laundry);
 
 module.exports = app;

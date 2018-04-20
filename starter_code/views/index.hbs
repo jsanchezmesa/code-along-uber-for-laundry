@@ -1,12 +1,12 @@
 <p>Welcome to {{title}}</p>
 
-{{#if isUserLoggedIn }}
-  <p>Hello, {{ currentUserInfo.name}}</p>
+{{#if user }}
+  <p>Hello, {{ user.name}}</p>
 {{/if}}
 
 <nav>
   <ul>
-    {{#if isUserLoggedIn }}
+    {{#if user }}
       <li> <a href="/launderers"> Find a Launderer </a> </li>
       <li> <a href="/dashboard"> See Dashboard </a> </li>
       <li> <a href="/logout"> Log Out </a> </li>
